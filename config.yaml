@@ -1,0 +1,37 @@
+# Model pricing fetcher configuration.
+# Enable the providers you want, list the regions to tag models with.
+# Auth blocks are optional overrides; by default each provider uses its
+# native credential chain (AWS profile/env, Azure CLI, gcloud, OCI config).
+
+providers:
+  aws:
+    enabled: true
+    regions:
+      - us-east-1
+    auth:
+      use_default_chain: true
+      profile: null            # optional: named AWS profile
+
+  azure:
+    enabled: true
+    regions:
+      - eastus
+    auth:
+      use_default_chain: true
+      subscription_id: null    # optional override
+
+  google:
+    enabled: true
+    regions:
+      - us-central1
+    auth:
+      use_default_chain: true
+      project_id: null         # optional override
+
+  oracle:
+    enabled: true
+    regions:
+      - us-phoenix-1
+    auth:
+      use_default_chain: true
+      region: null             # optional override

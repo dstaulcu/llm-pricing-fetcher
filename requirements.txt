@@ -1,0 +1,13 @@
+# Core (required to run)
+PyYAML>=6.0
+
+# Optional cloud SDKs — only needed for live model discovery / auth.
+# The script runs without them, falling back to the maintained price catalogs.
+boto3>=1.34.0                       # AWS Bedrock live listing
+azure-identity>=1.15.0              # Azure auth (future live discovery)
+azure-mgmt-cognitiveservices>=13.5.0  # Azure OpenAI deployments (future)
+google-cloud-aiplatform>=1.38.0     # Google Vertex AI (future live discovery)
+oci>=2.118.0                        # Oracle GenAI (future live discovery)
+
+# Testing
+pytest>=7.4.0
