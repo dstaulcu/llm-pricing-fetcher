@@ -1,0 +1,50 @@
+name: Refresh model pricing
+
+on:
+  schedule:
+    - cron: "0 6 * * 1"   # Mondays 06:00 UTC
+  workflow_dispatch:
+
+concurrency:
+  group: refresh-pricing
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - run: pip install -r requirements.txt
+
+      - run: python -m pytest tests/ -v
+
+      - name: Fetch pricing
+        run: |
+          python fetch_models.py
+          code=$?
+          if [ $code -eq 2 ]; then
+            echo "::error::fetch_models.py produced no output (exit 2)"
+            exit 1
+          elif [ $code -eq 1 ]; then
+            echo "::warning::fetch_models.py completed with some provider failures (exit 1); committing partial CSV"
+          fi
+
+      - name: Commit refreshed CSV if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          if git diff --quiet -- output/model_costs.csv; then
+            echo "No pricing changes; skipping commit"
+          else
+            git add output/model_costs.csv
+            git commit -m "chore: refresh model pricing"
+            git push
+          fi
